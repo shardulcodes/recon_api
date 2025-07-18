@@ -1,51 +1,44 @@
-# 🔍 Reconnaissance API
+# Reconnaissance API
 
 [![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-⚡-green)](https://fastapi.tiangolo.com/)
 [![Docker](https://img.shields.io/badge/Containerized-Docker-blue)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
----
+## Table of Contents
 
-## 📌 Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [API Documentation](#api-documentation)
+- [Setup](#setup)
+- [Sample Request](#sample-request)
+- [Testing](#testing)
+- [Project Structure](#project-structure)
+- [License](#license)
+- [Author](#author)
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [API Documentation](#-api-documentation)
-- [Setup (Local)](#-setup-local)
-- [Docker Deployment](#-docker-deployment)
-- [Sample Request](#-sample-request)
-- [Testing](#-testing)
-- [License](#-license)
+## Overview
 
----
+This project is a passive reconnaissance microservice built using FastAPI. Given a domain name, it gathers:
 
-## 📖 Overview
+- All subdomains
+- IP addresses (hostnames)
+- TLS certificates
+- Email DNS records (SPF, DKIM, DMARC, MX)
 
-This project is a **passive reconnaissance microservice** built using FastAPI. Given a domain name, it gathers:
+The API is useful for cybersecurity reconnaissance, penetration testing setups, or automated domain analysis.
 
-- ✅ All subdomains
-- ✅ IP addresses (hostnames)
-- ✅ TLS certificates
-- ✅ Email DNS records (SPF, DKIM, DMARC, MX)
+## Features
 
-The API can be used for cybersecurity reconnaissance, penetration testing setups, or automated domain analysis workflows.
+- Built with FastAPI
+- DNS and TLS inspection using `dnspython`, `ssl`, and `crt.sh`
+- Dockerized for easy deployment
+- Unit tests for API validation
+- Swagger and ReDoc documentation auto-generated
+- Minimal dependencies and clean code structure
 
----
-
-## 🚀 Features
-
-- ⚡ Built with **FastAPI**
-- 🧠 DNS & TLS inspection using `dnspython`, `ssl`, and `crt.sh`
-- 🔐 Secure and containerized with Docker
-- ✅ Includes unit tests for API contract
-- 📦 Fully documented Swagger UI (`/docs`)
-- 🧪 Production-ready code with logging and error handling
-
----
-
-## ⚙️ Tech Stack
+## Tech Stack
 
 | Component   | Description                 |
 | ----------- | --------------------------- |
@@ -57,8 +50,114 @@ The API can be used for cybersecurity reconnaissance, penetration testing setups
 | Requests    | HTTP client for `crt.sh`    |
 | pytest      | Unit testing framework      |
 
----
+## API Documentation
 
-## 📑 API Documentation
+After running the project, access documentation at:
 
-Once running, visit:
+- Swagger UI: http://localhost:8000/docs
+- ReDoc UI: http://localhost:8000/redoc
+
+## Setup
+
+### Option 1: Run Locally
+
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/recon-api.git
+cd recon-api
+
+# (Optional) Create a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the application
+uvicorn app.main:app --reload
+```
+
+Visit http://localhost:8000/docs to access the API interface.
+
+### Option 2: Run with Docker
+
+# Build Docker image
+
+docker build -t recon-api .
+
+# Run the container
+
+docker run -p 8000:8000 recon-api
+
+Access it at http://localhost:8000/docs
+
+### Testing
+
+To run unit tests:
+Testing
+To run unit tests and verify the API's response structure:
+
+# From the root directory
+
+python -m pytest
+Tests are located in app/tests/test_recon.py.
+They validate:
+
+HTTP status code
+
+Response structure
+
+Field types (list, dict)
+
+Presence of keys like subject and issuer in certificate data
+
+Sample Request
+Endpoint: POST /api/v1/recon
+
+Payload:
+
+{
+"domain": "example.com"
+}
+
+Response:
+
+{
+"subdomains": ["sub1.example.com", "sub2.example.com"],
+"hosts": {
+"example.com": ["93.184.216.34"],
+"sub1.example.com": ["93.184.216.35"]
+},
+"certs": {
+"example.com": [
+{
+"subject": {"commonName": "example.com"},
+"issuer": {"commonName": "DigiCert Inc"}
+}
+]
+},
+"email_records": {
+"mx": ["mail.example.com."],
+"spf": "v=spf1 include:spf.example.com ~all",
+"dkim": "v=DKIM1; k=rsa; p=....",
+"dmarc": "v=DMARC1; p=none; rua=mailto:dmarc@example.com"
+}
+}
+
+## Project Structure
+
+recon_api/
+│
+├── app/
+│ ├── main.py # FastAPI app entrypoint
+│ ├── recon.py # Core recon logic (subdomains, certs, DNS)
+│ ├── models.py # Pydantic models (request/response)
+│ └── tests/
+│ └── test_recon.py # Unit tests
+│
+├── Dockerfile # Containerization config
+├── requirements.txt # Dependencies
+└── README.md # Documentation
+
+Author
+Shardul

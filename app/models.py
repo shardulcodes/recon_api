@@ -22,16 +22,8 @@ class CertificateInfo(BaseModel):
 
 
 class ReconResponse(BaseModel):
-    """
-    Response model containing recon results.
-
-    Attributes:
-        subdomains (List[str]): Discovered subdomains.
-        hosts (Dict[str, List[str]]): Mapping of domain/subdomain to resolved IPs.
-        certs (Dict[str, CertificateInfo]): TLS cert subject/issuer for each domain.
-        email_records (Dict[str, Union[str, List[str]]]): MX, SPF, DKIM, DMARC records.
-    """
     subdomains: List[str]
     hosts: Dict[str, List[str]]
-    certs: Dict[str, CertificateInfo]
+    certs: Dict[str, List[CertificateInfo]]  # ← FIXED
     email_records: Dict[str, Union[str, List[str]]]
+

@@ -33,6 +33,10 @@ def test_recon_api_response_structure():
             assert isinstance(ips, list), f"IPs for {host} should be a list"
 
     if data["certs"]:
-        for domain, cert in data["certs"].items():
-            assert "subject" in cert, f"Missing 'subject' in cert for {domain}"
-            assert "issuer" in cert, f"Missing 'issuer' in cert for {domain}"
+        for domain, cert_list in data["certs"].items():
+            assert isinstance(cert_list, list), f"Expected list of certs for {domain}"
+            for cert in cert_list:
+                assert isinstance(cert, dict), f"Cert for {domain} must be a dict"
+                assert "subject" in cert, f"Missing 'subject' in cert for {domain}"
+                assert "issuer" in cert, f"Missing 'issuer' in cert for {domain}"
+

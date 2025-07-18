@@ -3,19 +3,13 @@ import ssl
 import requests
 import dns.resolver
 import logging
+from typing import List, Dict
+from app.models import CertificateInfo  # Make sure this is imported properly
 
 logger = logging.getLogger(__name__)
 
-def get_subdomains(domain: str) -> list[str]:
-    """
-    Fetch subdomains using crt.sh certificate transparency logs.
 
-    Args:
-        domain (str): The base domain to search.
-
-    Returns:
-        list[str]: A list of unique subdomains.
-    """
+def get_subdomains(domain: str) -> List[str]:
     url = f"https://crt.sh/?q=%.{domain}&output=json"
     try:
         response = requests.get(url, timeout=10)
@@ -35,16 +29,7 @@ def get_subdomains(domain: str) -> list[str]:
         return []
 
 
-def get_hosts(domains: list[str]) -> dict:
-    """
-    Resolve domain or subdomain names to IP addresses.
-
-    Args:
-        domains (list[str]): List of domain or subdomain names.
-
-    Returns:
-        dict: Mapping of each domain to its resolved IP address list.
-    """
+def get_hosts(domains: List[str]) -> Dict[str, List[str]]:
     hosts = {}
     for subdomain in domains:
         try:
@@ -55,48 +40,49 @@ def get_hosts(domains: list[str]) -> dict:
         except Exception as e:
             logger.warning(f"Host resolution error for {subdomain}: {e}")
             hosts[subdomain] = []
-
     return hosts
 
 
-def get_cert(domain: str) -> list:
+def parse_name_to_3d_list(name_list) -> List[List[List[str]]]:
     """
-    Retrieve TLS certificate subject and issuer information.
-
-    Args:
-        domain (str): Domain to connect to via SSL.
-
-    Returns:
-        list: [subject info, issuer info]
+    Converts certificate name fields to required 3D list format.
+    Example: [[("CN", "xyz"), ("O", "abc")]] → [[["CN", "xyz"], ["O", "abc"]]]
     """
+    return [[[k, v] for k, v in group] for group in name_list]
+
+
+
+def get_cert(domain: str) -> List[CertificateInfo]:
     try:
         ctx = ssl.create_default_context()
         with ctx.wrap_socket(socket.socket(), server_hostname=domain) as s:
             s.settimeout(5.0)
             s.connect((domain, 443))
             cert = s.getpeercert()
-            return [
-                cert.get("subject", []),
-                cert.get("issuer", [])
-            ]
+
+            def to_nested_list(name_list):
+                result = []
+                for attr in name_list:
+                    inner = []
+                    for k, v in attr:
+                        inner.append([k, v])
+                    result.append(inner)
+                return result
+
+            subject = to_nested_list(cert.get("subject", []))
+            issuer = to_nested_list(cert.get("issuer", []))
+
+            return [CertificateInfo(subject=subject, issuer=issuer)]
     except Exception as e:
         logger.warning(f"TLS certificate retrieval failed for {domain}: {e}")
-        return []
+        return [CertificateInfo(subject=[], issuer=[])]  # ✅ Always return a valid structure
 
 
-def get_email_records(domain: str) -> dict:
-    """
-    Query DNS records related to email configuration (MX, SPF, DKIM, DMARC).
 
-    Args:
-        domain (str): The domain to query.
 
-    Returns:
-        dict: Dictionary with keys: mx, spf, dkim, dmarc
-    """
+def get_email_records(domain: str) -> Dict[str, List[str] or str]:
     records = {}
 
-    # MX Records
     try:
         mx_records = dns.resolver.resolve(domain, "MX", lifetime=5)
         records["mx"] = [r.exchange.to_text() for r in mx_records]
@@ -104,7 +90,6 @@ def get_email_records(domain: str) -> dict:
         logger.warning(f"MX record lookup failed for {domain}: {e}")
         records["mx"] = []
 
-    # TXT Records (to find SPF, DKIM, DMARC)
     try:
         txt_records = dns.resolver.resolve(domain, "TXT", lifetime=5)
         for r in txt_records:
@@ -118,7 +103,7 @@ def get_email_records(domain: str) -> dict:
     except Exception as e:
         logger.warning(f"TXT record lookup failed for {domain}: {e}")
 
-    # Default to empty strings if any are missing
+    # Default empty fields
     records.setdefault("spf", "")
     records.setdefault("dmarc", "")
     records.setdefault("dkim", "")
@@ -126,15 +111,9 @@ def get_email_records(domain: str) -> dict:
     return records
 
 
-async def perform_recon(domain: str) -> dict:
+async def perform_recon(domain: str) -> Dict:
     """
-    Perform full passive recon on a domain.
-
-    Args:
-        domain (str): The domain to analyze.
-
-    Returns:
-        dict: Recon results (subdomains, hosts, certs, email records)
+    Perform passive recon and return data formatted to match ReconResponse schema.
     """
     logger.info(f"Starting recon for domain: {domain}")
 
