@@ -1,4 +1,3 @@
-Here is your **cleaned-up, correctly formatted, and copy-paste-ready** `README.md` file for your **Reconnaissance API**:
 
 ````markdown
 # Reconnaissance API
