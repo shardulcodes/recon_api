@@ -1,5 +1,3 @@
-Thanks for sharing that! Since I can't view your page content directly, I’ll help you fix the Markdown rendering issues based on what you've pasted. Here's a cleaned-up version of your `README.md` that should render properly when copied and pasted:
-
 ```markdown
 # Reconnaissance API
 
