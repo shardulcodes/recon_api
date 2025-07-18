@@ -1,9 +1,10 @@
+Thanks for sharing that! Since I can't view your page content directly, I’ll help you fix the Markdown rendering issues based on what you've pasted. Here's a cleaned-up version of your `README.md` that should render properly when copied and pasted:
 
-````markdown
+```markdown
 # Reconnaissance API
 
 [![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-⚡-green)](https://fastapi.tiangolo.com/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-%E2%9A%A1-green)](https://fastapi.tiangolo.com/)
 [![Docker](https://img.shields.io/badge/Containerized-Docker-blue)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -66,8 +67,8 @@ The API is useful for cybersecurity reconnaissance, penetration testing setups, 
 
 After running the project, access the API documentation at:
 
-- 🔍 Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
-- 📘 ReDoc UI: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+- Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
+- ReDoc UI: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
 ---
 
@@ -90,7 +91,6 @@ pip install -r requirements.txt
 # Run the application
 uvicorn app.main:app --reload
 ```
-````
 
 Visit [http://localhost:8000/docs](http://localhost:8000/docs) to access the API interface.
 
@@ -112,7 +112,7 @@ Then visit [http://localhost:8000/docs](http://localhost:8000/docs) to explore t
 
 ## Sample Request
 
-**Endpoint:** `POST /api/v1/recon`
+**Endpoint:** `POST /api/v1/recon`  
 **Payload:**
 
 ```json
@@ -186,9 +186,5 @@ recon_api/
 ## Author
 
 **Shardul**
-
 ```
 
----
-
-```
