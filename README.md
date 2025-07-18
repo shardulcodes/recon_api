@@ -1,4 +1,4 @@
-```markdown
+
 # Reconnaissance API
 
 [![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
@@ -88,7 +88,6 @@ pip install -r requirements.txt
 
 # Run the application
 uvicorn app.main:app --reload
-```
 
 Visit [http://localhost:8000/docs](http://localhost:8000/docs) to access the API interface.
 
