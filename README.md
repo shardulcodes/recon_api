@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-%E2%9A%A1-green)](https://fastapi.tiangolo.com/)
 [![Docker](https://img.shields.io/badge/Containerized-Docker-blue)](https://www.docker.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 
 ## Table of Contents
 
@@ -66,7 +66,7 @@ The API is useful for cybersecurity reconnaissance, penetration testing setups, 
 After running the project, access the API documentation at:
 
 - Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
-- ReDoc UI: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+
 
 ---
 
